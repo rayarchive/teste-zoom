@@ -1,19 +1,102 @@
-<main>
-  <div class="hero-container">
-    <section class="hero">
-      <div class="hero__content">
-        <div class="hero__bg"></div>
-        <h1 class="hero__title font-bold">Hobbiton</h1>
-      </div>
-      <div class="hero__cover">
-        <img class="hero__cover-img" src="https://assets.codepen.io/204808/hobbit-hole.png" alt="" />
-      </div>
-    </section>
-  </div>
-  <section class="section-stick min-h-screen bg-black flex justify-center items-center text-white">
-    <p class="opacity-reveal text-7xl text-center w-3/5">If ever you are passing my way, don't wait to knock! Tea is at four; but any of you are welcome at any time.</p>
-  </section>
-  <section class="hobbiton">
-    <img class="hobbiton-img" src="https://assets.codepen.io/204808/hobitton.jpg" alt="" />
-  </section>
-</main>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 350vh; /* Aumentei um pouco para o scroll ser mais suave */
+            background-color: #1a1a2e; 
+            overflow-x: hidden;
+        }
+
+        .zoom-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .door-frame {
+            position: absolute;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            pointer-events: none; 
+            will-change: transform;
+        }
+
+        /* AJUSTE AQUI: O container agora tenta ocupar o máximo de espaço disponível */
+        .widget-wrapper {
+            position: absolute;
+            z-index: 1;
+            width: 98vw; /* Quase toda a largura da tela */
+            height: 100vh; /* Toda a altura da tela para evitar scroll interno */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transform: scale(0.7);
+            transition: opacity 0.4s ease-out;
+            pointer-events: none; 
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%; /* O iframe agora preenche o container de 100vh */
+            border: none;
+            /* Se a estante ainda tiver scroll, o comando abaixo tenta esconder a barra */
+            overflow: hidden; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="zoom-container">
+        <img src="https://i.imgur.com/0JaASsA.png" class="door-frame" id="door">
+        
+        <div class="widget-wrapper" id="widgetContainer">
+            <iframe src="https://rayarchive.github.io/Estante-5-colunas/" id="estanteIframe"></iframe>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('scroll', () => {
+            const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = window.scrollY / scrollHeight;
+            
+            const door = document.getElementById('door');
+            const widget = document.getElementById('widgetContainer');
+
+            // Zoom da porta (escala aumenta até sumir)
+            const doorScale = 1 + (scrollPercent * 30);
+            door.style.transform = `scale(${doorScale})`;
+
+            // Revelação do Widget
+            if (scrollPercent > 0.25) {
+                // A opacidade chega a 1 rapidamente após 25% de scroll
+                let opacity = (scrollPercent - 0.25) * 4;
+                widget.style.opacity = Math.min(opacity, 1);
+                
+                // A escala vai de 0.7 até 1.0
+                let scale = 0.7 + ((scrollPercent - 0.25) * 0.6);
+                widget.style.transform = `scale(${Math.min(scale, 1)})`;
+                
+                widget.style.pointerEvents = "all"; 
+            } else {
+                widget.style.opacity = 0;
+                widget.style.transform = "scale(0.7)";
+                widget.style.pointerEvents = "none";
+            }
+        });
+    </script>
+</body>
+</html>
